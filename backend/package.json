@@ -1,0 +1,24 @@
+{
+  "name": "monitor_test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "cors": "^2.8.5",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
+    "mysql2": "^2.3.3",
+    "node-fetch": "^3.2.4",
+    "ping": "^0.4.2",
+    "ping-lite": "^2.0.2",
+    "ping-monitor": "^0.6.2",
+    "sequelize": "^6.19.0"
+  }
+}
