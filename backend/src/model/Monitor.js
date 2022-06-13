@@ -1,4 +1,5 @@
 const M = require('ping-monitor');
+const ping = require('ping');
 const axios = require('axios');
 
 class Monitor{
@@ -38,45 +39,57 @@ class Monitor{
         
     }
 
-    restart(){
-        if(!this.getMultipleAltered()){
-            this.setMultipleAltered();
+    restart(getMultipleAltered, setMultipleAltered, startMonitoring){
+        if(!getMultipleAltered()){
+            setMultipleAltered();
             setTimeout(()=>{
-                this.startMonitoring();
+                startMonitoring();
             }, 90000)
         }
     }
     
 
     alterRadio(status){
-        if((this.radio.status === "UP" && !status) || (this.radio.status === "DOWN" && status)){
+        let radio = this.radio;
+        let monitores = this.monitores;
+        let setAltered = this.setAltered;
+        let restart = this.restart;
+        let getMultipleAltered = this.getMultipleAltered;
+        let setMultipleAltered = this.setMultipleAltered;
+        let startMonitoring = this.startMonitoring;
+
+        ping.sys.probe("8.8.8.8", function(isAlive){
+            console.log(radio.status)
+            if(isAlive && ((radio.status === "UP" && !status) || (radio.status === "DOWN" && status))){
             
-            this.monitores.map(monitor=>{
-                monitor.monitor.stop();
-            })
-
-            let body = this.radio.status === "UP" ? { status : "DOWN" } : { status : "UP"}     
-                this.radio.update(body)
-                    .then(response => {
-
-                        console.log(`STATUS DE ${this.radio.name} ALTERADO PARA ${body.status}`);
-
-                        axios.get(`https://api.telegram.org/bot5316953414:AAGmCiwDYwVsy5BOPVDjFNOusKbl8pe8Lbw/sendMessage?chat_id=-725917814&text=${this.radio.name} esta ${body.status}`)
-                        .then(()=>{
-                            console.log("MENDAGEM ENVIADA");
-                            this.setAltered(true);
-                            this.restart();
+                monitores.map(monitor=>{
+                    monitor.monitor.stop();
+                })
+    
+                let body = radio.status === "UP" ? { status : "DOWN" } : { status : "UP"}     
+                    radio.update(body)
+                        .then(response => {
+    
+                            console.log(`STATUS DE ${radio.name} ALTERADO PARA ${body.status}`);
+    
+                            axios.get(`https://api.telegram.org/bot5316953414:AAGmCiwDYwVsy5BOPVDjFNOusKbl8pe8Lbw/sendMessage?chat_id=-725917814&text=${radio.name} esta ${body.status}`)
+                            .then(()=>{
+                                console.log("MENDAGEM ENVIADA");
+                                setAltered(true);
+                                restart(getMultipleAltered, setMultipleAltered, startMonitoring);
+                            })
+                            .catch(()=>{
+                                console.log("ERRO AO ENVIAR MENSAGEM");
+                                    restart(getMultipleAltered, setMultipleAltered, startMonitoring);
+                            })
+                                
                         })
-                        .catch(()=>{
-                            console.log("ERRO AO ENVIAR MENSAGEM");
-                                this.restart();
-                        })
-                            
-                    })
-
-                
-                
-            }
+    
+                    
+                    
+                }
+            });
+        
 
         }
 
