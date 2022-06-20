@@ -58,12 +58,9 @@ const Markers = (props)=>{
 
                          
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [infoWindow]);
+    }, [infoWindow, radios]);
 
     useEffect(()=>{
-        
-        
-        alert("1")
         setTimeout(()=>{
             if(altered){
                 props.setRefreshMap(!props.refreshMap);
