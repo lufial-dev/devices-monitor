@@ -1,4 +1,4 @@
-import { withGoogleMap, GoogleMap} from 'react-google-maps';
+import { withGoogleMap, GoogleMap, Marker} from 'react-google-maps';
 import { useState, useEffect } from "react";
 import * as S from "./styled";
 import Markers from '../../components/Markers';
@@ -12,6 +12,7 @@ const Map = ()=>{
     const [showAddMark, setShowAddMark] = useState(false);
     const [downs, setDowns] = useState([]);
     const [latLng, setLatLng] = useState({});
+   
 
     const GoogleMapExample = withGoogleMap(props => (
       <GoogleMap
@@ -22,6 +23,7 @@ const Map = ()=>{
         clickableIcons = {true}
       >
         <Markers setRefreshMap={setRefreshMap} refreshMap={refreshMap} setDowns={setDowns}/>
+   
       </GoogleMap >
    ));
 
@@ -31,10 +33,10 @@ const Map = ()=>{
     }
 
    useEffect(()=>{
-    
+ 
    }, [refreshMap])
     
-
+   
   return(
       <S.Container>
         <GoogleMapExample

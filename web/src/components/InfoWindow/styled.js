@@ -13,9 +13,13 @@ export const Container = styled.div`
 
     border-radius: 10px ;
     box-shadow: 4px 4px 4px;
+
+    @media(min-width: 800px) {
+        margin-left: ${props=> props.posX}px;
+        margin-top: ${props=>props.posY}px;
+    }
    
-    margin-left: ${props=> props.posX}px;
-    margin-top: ${props=>props.posY}px;
+    
 `
 
 export const Description = styled.div`

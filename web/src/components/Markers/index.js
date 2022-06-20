@@ -11,17 +11,22 @@ import InfoWindow from "../InfoWindow";
 
 const Markers = (props)=>{
     const [refresh, setRefresh] = useState(false);
-    const [infoWindow, setInfoWindow] = useState();
+    const [infoWindow, setInfoWindow] = useState(null);
     const [altered, setAltered] = useState(false);
     const [downs, setDowns] = useState([]);
-    const [nodes, setNodes] = useState([])
+    const [radios, setRadios] = useState([]);
+
     useEffect(()=>{
-            
-            let radios = [];
-            api.get('/')
+        api.get('/')
             .then(response => {
-                radios = response.data.hosts;
-                setAltered(response.data.altered)
+                let radios = response.data.hosts;
+                setRadios(radios);
+                setAltered(response.data.altered);
+            })
+    }, [])
+
+    useEffect(()=>{
+            if(radios.length > 0){
                 let i = 0;
                 let list = radios.map(radio=>{
                     if(radio.status === "DOWN" && !downs.includes(radio.local))
@@ -31,41 +36,34 @@ const Markers = (props)=>{
                             icon={radio.status === "UP" ? pin_green : pin_red} 
                             position={{ lat: parseFloat(radio.lat), lng: parseFloat(radio.lng)  }} 
                             title={radio.name}
+                            onclick = {()=>alert("clicou")}
                         >   
                             {
                                 infoWindow == radio.id &&
-                                    <InfoWindow posX={parseInt(document.querySelector(`[title="${radio.name}"]`).offsetLeft)} posY={parseInt(document.querySelector(`[title="${radio.name}"]`).offsetTop)}
-                                        radio={radio}
-                                        setInfoWindow = {setInfoWindow}
-                                    /> 
+                                <InfoWindow posX={document.querySelector(`[title="${radio.name}"]`) ? parseInt(document.querySelector(`[title="${radio.name}"]`).offsetLeft) : 0 } posY={document.querySelector(`[title="${radio.name}"]`) ? parseInt(document.querySelector(`[title="${radio.name}"]`).offsetTop) : 0 }
+                                    radio={radio}
+                                    setInfoWindow = {setInfoWindow}
+                                /> 
                             }   
                                       
                         </Marker>
 
                     </>
 
-                })
+                });
+                
+                props.setMarkers(list);  
+            }
                                      
 
-               props.setMarkers(list);  
-            
-            setTimeout(()=>{
-                radios.map(radio=>{
-                    let node = document.querySelector(`[title="${radio.name}"]`);
-                    node.onclick = ()=>{
-                        setInfoWindow(radio.id);
-                        console.log(radio.name)
-                    }
-                    
-                })
-            }, 10000)
-
-           
-        })
+                         
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [infoWindow]);
 
     useEffect(()=>{
+        
+        
+        alert("1")
         setTimeout(()=>{
             if(altered){
                 props.setRefreshMap(!props.refreshMap);
@@ -74,7 +72,23 @@ const Markers = (props)=>{
             setRefresh(!refresh);
         }, 120000);
 
-    }, [refresh])
+    }, [refresh]);
+
+    useEffect(()=>{
+        setTimeout(()=>{
+            radios.map(radio=>{
+                let node = document.querySelector(`[title="${radio.name}"]`);
+                node.addEventListener("click", ()=>{
+                    setInfoWindow(radio.id);
+                });
+
+                node.addEventListener("touchstart", ()=>{
+                    setInfoWindow(radio.id);
+                });
+            })
+        }, 15000);
+        
+    }, [radios])
 
     return(
         <>
