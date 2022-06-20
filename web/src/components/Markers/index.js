@@ -1,47 +1,80 @@
 import pin_green from "../../static/img/custom_pin_green.png";
 import pin_red from "../../static/img/custom_pin.png";
-import { Marker, InfoWindow} from 'react-google-maps';
+import { Marker} from 'react-google-maps';
 import { useState, useEffect } from "react";
 import { bindActionCreators } from "redux";
 import * as MarkersActions from "../../store/actions/markers";
 import { connect } from "react-redux";
 import api from "../../services/api";
+import InfoWindow from "../InfoWindow";
 // {markers, setMarkers, refreshMap, setRefreshMap}
 
 const Markers = (props)=>{
     const [refresh, setRefresh] = useState(false);
-
+    const [infoWindow, setInfoWindow] = useState();
+    const [altered, setAltered] = useState(false);
+    const [downs, setDowns] = useState([]);
+    const [nodes, setNodes] = useState([])
     useEffect(()=>{
-            let downs = [];
+            
+            let radios = [];
             api.get('/')
             .then(response => {
-                let list = response.data.hosts.map(radio=>{
+                radios = response.data.hosts;
+                setAltered(response.data.altered)
+                let i = 0;
+                let list = radios.map(radio=>{
                     if(radio.status === "DOWN" && !downs.includes(radio.local))
-                        downs.push(radio.local)
-                    return <>
-                        <Marker 
+                        setDowns([...downs, radio.local]);            
+                    return <><Marker 
+                            key={radio.id}
                             icon={radio.status === "UP" ? pin_green : pin_red} 
                             position={{ lat: parseFloat(radio.lat), lng: parseFloat(radio.lng)  }} 
                             title={radio.name}
-                            onClick={props.onMarkerRightClick}
-                        />                    
+                        >   
+                            {
+                                infoWindow == radio.id &&
+                                    <InfoWindow posX={parseInt(document.querySelector(`[title="${radio.name}"]`).offsetLeft)} posY={parseInt(document.querySelector(`[title="${radio.name}"]`).offsetTop)}
+                                        radio={radio}
+                                        setInfoWindow = {setInfoWindow}
+                                    /> 
+                            }   
+                                      
+                        </Marker>
+
                     </>
 
                 })
                                      
 
-               props.setMarkers(list);                    
-
+               props.setMarkers(list);  
+            
             setTimeout(()=>{
-                if(response.data.altered){
-                    props.setRefreshMap(!props.refreshMap);
-                    props.setDowns(downs);
-                }
-                setRefresh(!refresh);
-            }, 40000);
+                radios.map(radio=>{
+                    let node = document.querySelector(`[title="${radio.name}"]`);
+                    node.onclick = ()=>{
+                        setInfoWindow(radio.id);
+                        console.log(radio.name)
+                    }
+                    
+                })
+            }, 10000)
+
+           
         })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [refresh]);
+    }, [infoWindow]);
+
+    useEffect(()=>{
+        setTimeout(()=>{
+            if(altered){
+                props.setRefreshMap(!props.refreshMap);
+                props.setDowns(downs);
+            }
+            setRefresh(!refresh);
+        }, 120000);
+
+    }, [refresh])
 
     return(
         <>
@@ -54,10 +87,6 @@ const Markers = (props)=>{
         </>
     );
 }
-
-const onMarkerClick = (evt) => {
-    console.log("foi");
-};
 
 const mapDispatchToProps = dispatch =>
     bindActionCreators(

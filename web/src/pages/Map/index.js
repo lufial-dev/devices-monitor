@@ -1,4 +1,4 @@
-import { withGoogleMap, GoogleMap, Marker} from 'react-google-maps';
+import { withGoogleMap, GoogleMap} from 'react-google-maps';
 import { useState, useEffect } from "react";
 import * as S from "./styled";
 import Markers from '../../components/Markers';
@@ -19,6 +19,7 @@ const Map = ()=>{
         defaultZoom = { 11 }
         onDblClick = {addMarker}
         onClick = {()=>setShowAddMark(false)}
+        clickableIcons = {true}
       >
         <Markers setRefreshMap={setRefreshMap} refreshMap={refreshMap} setDowns={setDowns}/>
       </GoogleMap >
@@ -30,11 +31,11 @@ const Map = ()=>{
     }
 
    useEffect(()=>{
-
+    
    }, [refreshMap])
     
 
-    return(
+  return(
       <S.Container>
         <GoogleMapExample
           containerElement={ <S.Container/> }
