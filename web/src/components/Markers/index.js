@@ -4,6 +4,7 @@ import { Marker} from 'react-google-maps';
 import { useState, useEffect } from "react";
 import { bindActionCreators } from "redux";
 import * as MarkersActions from "../../store/actions/markers";
+import CardErrors from "../CardErrors";
 import { connect } from "react-redux";
 import api from "../../services/api";
 import InfoWindow from "../InfoWindow";
@@ -29,8 +30,10 @@ const Markers = (props)=>{
             if(radios.length > 0){
                 let i = 0;
                 let list = radios.map(radio=>{
-                    if(radio.status === "DOWN" && !downs.includes(radio.local))
-                        setDowns([...downs, radio.local]);            
+                    if(radio.status === "DOWN" && !downs.includes(radio.local)){
+                        setDowns([...downs, radio.local]);
+                    }
+                                    
                     return <><Marker 
                             key={radio.id}
                             icon={radio.status === "UP" ? pin_green : pin_red} 
@@ -47,7 +50,11 @@ const Markers = (props)=>{
                             }   
                                       
                         </Marker>
-
+                        {
+                            radio.id == radios[radios.length-1].id &&
+                            <CardErrors downs={downs}/>
+                        }
+                       
                     </>
 
                 });
@@ -64,7 +71,6 @@ const Markers = (props)=>{
         setTimeout(()=>{
             if(altered){
                 props.setRefreshMap(!props.refreshMap);
-                props.setDowns(downs);
             }
             setRefresh(!refresh);
         }, 120000);
@@ -83,14 +89,14 @@ const Markers = (props)=>{
                     setInfoWindow(radio.id);
                 });
             })
-        }, 15000);
+        }, 25000);
         
     }, [radios])
 
     return(
         <>
             {
-                props.markers &&
+                props.markers[0] &&
                     props.markers.map(marker=>{
                         return marker;
                     }) 

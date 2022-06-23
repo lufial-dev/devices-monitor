@@ -1,16 +1,14 @@
-import { withGoogleMap, GoogleMap, Marker} from 'react-google-maps';
+import { withGoogleMap, GoogleMap} from 'react-google-maps';
 import { useState, useEffect } from "react";
 import * as S from "./styled";
 import Markers from '../../components/Markers';
 import AddMarker from '../AddMarker';
-import CardErrors from '../../components/CardErrors';
 
 
 
 const Map = ()=>{
     const [refreshMap, setRefreshMap] = useState(false);
     const [showAddMark, setShowAddMark] = useState(false);
-    const [downs, setDowns] = useState([]);
     const [latLng, setLatLng] = useState({});
    
 
@@ -22,7 +20,7 @@ const Map = ()=>{
         onClick = {()=>setShowAddMark(false)}
         clickableIcons = {true}
       >
-        <Markers setRefreshMap={setRefreshMap} refreshMap={refreshMap} setDowns={setDowns}/>
+        <Markers setRefreshMap={setRefreshMap} refreshMap={refreshMap}/>
    
       </GoogleMap >
    ));
@@ -47,7 +45,6 @@ const Map = ()=>{
             showAddMark &&
             <AddMarker latLng={latLng} setShowAddMark={setShowAddMark}/>
         }
-        <CardErrors downs={downs}/>
       </S.Container>
    );
 }

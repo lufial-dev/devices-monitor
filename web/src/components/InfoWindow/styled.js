@@ -51,6 +51,7 @@ export const DescriptionLine = styled.div`
     border: 1px solid #ccc ;
     margin-top: 5px ;
     border-radius: 8px ;
+    display: flex;
 
 `
 
@@ -60,4 +61,26 @@ export const Title = styled.div`
     margin-top: 10px ;
     font-size: 12pt ;
     font-weight: bold ;
+`
+
+export const Ping = styled.div`
+    width: 95% ;
+
+    .time{
+        width: 100% ;
+    }
+
+    span{
+        margin-left: 10px ;
+    }
+    
+    button{
+        margin: 6px 0 0 20px ;
+        padding: 0 10px ;
+        border-radius: 10px ;
+        border: none ;
+        color: white ;
+        background-color: #0055ff ;
+        cursor: pointer;
+    }
 `
